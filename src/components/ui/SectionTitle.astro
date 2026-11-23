@@ -1,0 +1,41 @@
+---
+import { ArrowRight } from '@lucide/astro'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  title: string
+  link?: { text: string; mobileText?: string; url: string }
+  class?: string
+}
+
+const { title, link, class: className = '' } = Astro.props
+---
+
+<div class={cn('flex items-end justify-between gap-4', className)}>
+  <h3 class='relative text-2xl md:text-3xl font-bold'>
+    {title}
+    <span class='absolute -bottom-3 left-0 h-1 w-12 rounded-full bg-primary'></span>
+  </h3>
+  {
+    link && (
+      <a
+        href={link.url}
+        class='group flex shrink-0 items-center gap-2 text-sm font-semibold text-primary hover:text-primary-dark'
+      >
+        {link.mobileText ? (
+          <>
+            <span class='md:hidden'>{link.mobileText}</span>
+            <span class='hidden md:inline'>{link.text}</span>
+          </>
+        ) : (
+          link.text
+        )}
+        <ArrowRight
+          size={18}
+          class='transition-transform group-hover:translate-x-1'
+          aria-hidden='true'
+        />
+      </a>
+    )
+  }
+</div>

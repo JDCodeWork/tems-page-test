@@ -1,0 +1,36 @@
+---
+import { UserRound, Menu } from '@lucide/astro'
+
+import IeeTemsLogo from '@assets/iee-tems-logo.svg'
+
+import Button from '@/components/ui/Button.astro'
+import HomeMenu from './HomeMenu.astro'
+---
+
+<div
+  id='header'
+  class='w-full flex flex-wrap items-center relative md:py-8'
+>
+  <img
+    src={IeeTemsLogo.src}
+    alt='IEE TEMS LOGO'
+    class='w-50 md:w-60 lg:w-72 xl:w-80 md:pt-12 md:absolute'
+  />
+  <div class='ml-auto md:ml-0 mr-2 md:pr-16 md:pl-8 flex gap-2 order-3'>
+    <Button
+      size='sm'
+      class='gap-1 px-3 md:py-3 md:text-sm md:px-4'
+    >
+      <UserRound class='size-4' />
+      Únete
+    </Button>
+    <Button
+      variant='icon'
+      class='bg-transparent text-foreground hover:bg-primary hover:text-background md:hidden'
+      id='mobile-home-menu-button'
+    >
+      <Menu />
+    </Button>
+  </div>
+  <HomeMenu />
+</div>

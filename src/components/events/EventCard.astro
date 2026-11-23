@@ -1,0 +1,94 @@
+---
+import { Clock, MapPin, UserRound } from '@lucide/astro'
+import { cn } from '@/lib/utils'
+import type { EventCategory, TemsEvent } from '@/types'
+
+interface Props {
+  event: TemsEvent
+  class?: string
+}
+
+const { event, class: className = '' } = Astro.props
+
+// El build corre en UTC (Netlify); se fuerza la hora de Colombia.
+const timeZone = 'America/Bogota'
+const date = new Date(event.date)
+const day = date.toLocaleDateString('es-CO', { day: '2-digit', timeZone })
+const month = date
+  .toLocaleDateString('es-CO', { month: 'short', timeZone })
+  .replace('.', '')
+  .toUpperCase()
+const time = date
+  .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone })
+  .toUpperCase()
+
+const categories = {
+  charla: { label: 'Charla', date: 'text-primary', badge: 'bg-primary/10 text-primary' },
+  taller: { label: 'Taller', date: 'text-secondary-dark', badge: 'bg-secondary/10 text-secondary' },
+  conexa: { label: 'Conexa', date: 'text-primary', badge: 'bg-primary/10 text-primary' },
+} satisfies Record<EventCategory, { label: string; date: string; badge: string }>
+
+const category = categories[event.category]
+---
+
+<article
+  class={cn(
+    'flex h-full gap-4 rounded-2xl bg-white p-5 shadow-[0_4px_24px_-8px_rgb(0_11_25/0.15)] md:p-6',
+    className,
+  )}
+>
+  <time
+    datetime={event.date}
+    class={cn('flex shrink-0 flex-col items-center font-title font-bold leading-none', category.date)}
+  >
+    <span class='text-3xl md:text-4xl'>{day}</span>
+    <span class='mt-1 text-lg'>{month}</span>
+  </time>
+
+  <div class='flex min-w-0 flex-1 flex-col'>
+    <div class='flex items-start gap-3'>
+      <div class='flex-1'>
+        <span
+          class={cn('inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide', category.badge)}
+        >
+          {category.label}
+        </span>
+        <h4 class='mt-2 font-title text-base font-bold leading-snug'>
+          {event.url ? <a href={event.url} class='hover:text-primary'>{event.title}</a> : event.title}
+        </h4>
+      </div>
+      {
+        event.speaker && (
+          <div
+            class='grid size-16 shrink-0 place-items-center overflow-hidden rounded-full bg-amber-200 text-secondary-dark ring-4 ring-background'
+            title={event.speaker.name}
+          >
+            {event.speaker.photo ? (
+              <img
+                src={event.speaker.photo}
+                alt={event.speaker.name}
+                class='size-full object-cover'
+                loading='lazy'
+              />
+            ) : (
+              <UserRound size={30} aria-hidden='true' />
+            )}
+          </div>
+        )
+      }
+    </div>
+
+    <p class='mt-3 text-xs leading-relaxed text-foreground/80 md:text-[13px]'>{event.description}</p>
+
+    <div class='mt-auto flex flex-wrap gap-x-6 gap-y-1 pt-4 text-xs font-medium'>
+      <span class='flex items-center gap-1.5'>
+        <Clock size={15} class='text-primary' aria-hidden='true' />
+        {time}
+      </span>
+      <span class='flex items-center gap-1.5'>
+        <MapPin size={15} class='text-primary' aria-hidden='true' />
+        {event.location}
+      </span>
+    </div>
+  </div>
+</article>
