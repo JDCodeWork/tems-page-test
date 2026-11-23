@@ -1,0 +1,28 @@
+---
+import { ArrowRight, Calendar } from '@lucide/astro'
+import Button from '../ui/Button.astro'
+---
+
+<div
+  class='pl-4 max-w-3/4 md:pl-32 md:pt-16 md:max-w-2/3 lg:max-w-1/2 xl:max-w-[40%] z-10 relative'
+>
+  <div class='flex flex-col gap-4 md:gap-8 lg:gap-10 xl:gap-12'>
+    <div class='space-y-2 xl:space-y-3'>
+      <h1 class='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-wider'>
+        IEEE TEMS <span class='text-primary text-5xl md:text-6xl lg:text-7xl xl:text-8xl'>UNAL</span
+        >
+      </h1>
+      <p class='font-bold md:text-xl lg:text-2xl xl:text-3xl'>
+        Technology & Engineering Management Society
+      </p>
+      <p class='text-sm lg:text-base xl:text-lg max-w-4/5'>
+        Impulsamos a estudiantes de ingeniería a liderar, aprender y crear soluciones que
+        transformen el futuro
+      </p>
+    </div>
+    <div class='space-y-4 lg:space-y-0 lg:flex lg:gap-4 xl:gap-8'>
+      <Button>Conoce más <ArrowRight /></Button>
+      <Button variant='outline'>Próximos eventos <Calendar /></Button>
+    </div>
+  </div>
+</div>

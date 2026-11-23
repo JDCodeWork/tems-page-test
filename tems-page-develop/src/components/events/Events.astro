@@ -1,0 +1,54 @@
+---
+import { fetchUpcomingEvents } from '@/lib/events'
+import Carousel from '@/components/ui/Carousel.astro'
+import SectionTitle from '@/components/ui/SectionTitle.astro'
+import EventCard from './EventCard.astro'
+
+const upcomingEvents = await fetchUpcomingEvents()
+---
+
+<section
+  id='eventos'
+  class='scroll-mt-4 bg-white/60 px-4 py-12 md:px-24 md:py-16'
+>
+  <SectionTitle
+    title='Próximos eventos'
+    link={{ text: 'Ver todos los eventos', mobileText: 'Ver todos', url: '#eventos' }}
+  />
+
+  {
+    upcomingEvents.length === 0 && (
+      <p class='mt-10 rounded-2xl bg-white p-6 text-center text-sm text-foreground/70'>
+        Pronto anunciaremos nuevos eventos. ¡Síguenos en redes para enterarte!
+      </p>
+    )
+  }
+
+  <!-- Móvil: lista vertical con los 3 primeros eventos -->
+  <ul class='mt-10 space-y-5 md:hidden'>
+    {
+      upcomingEvents.slice(0, 3).map((event) => (
+        <li>
+          <EventCard event={event} />
+        </li>
+      ))
+    }
+  </ul>
+
+  <!-- Desktop: carrusel -->
+  <div class='mt-10 hidden md:block'>
+    <Carousel
+      label='Próximos eventos'
+      trackClass='gap-6 py-2'
+      dots='none'
+    >
+      {
+        upcomingEvents.map((event) => (
+          <div class='shrink-0 snap-start basis-[calc((100%-1.5rem)/2)] xl:basis-[calc((100%-3rem)/3)]'>
+            <EventCard event={event} />
+          </div>
+        ))
+      }
+    </Carousel>
+  </div>
+</section>

@@ -1,0 +1,46 @@
+---
+import { fetchTeamMembers } from '@/lib/team'
+import Carousel from '@/components/ui/Carousel.astro'
+import SectionTitle from '@/components/ui/SectionTitle.astro'
+import Wave1 from '@/assets/hero/wave-1.svg'
+import TeamCard from './TeamCard.astro'
+
+const teamMembers = await fetchTeamMembers()
+---
+
+<section
+  id='equipo'
+  class='relative scroll-mt-4 overflow-hidden bg-background px-4 py-12 md:px-24 md:py-16'
+>
+  <Wave1
+    class='pointer-events-none absolute -right-48 top-0 hidden h-full text-amber-400/40 -scale-x-100 lg:block'
+    aria-hidden='true'
+    focusable='false'
+  />
+
+  <div class='relative'>
+    <SectionTitle
+      title='Nuestro equipo'
+      link={{
+        text: 'Conoce a todas las personas detrás de TEMS UNAL',
+        mobileText: 'Ver todos',
+        url: '#equipo',
+      }}
+    />
+
+    <div class='-mx-4 mt-10 md:mx-0'>
+      <Carousel
+        label='Nuestro equipo'
+        trackClass='gap-4 px-[20%] py-2 sm:px-[10%] md:gap-5 md:px-0'
+      >
+        {
+          teamMembers.map((member) => (
+            <div class='shrink-0 snap-center basis-full sm:basis-[calc(50%-0.5rem)] md:snap-start md:basis-[calc((100%-2.5rem)/3)] lg:basis-[calc((100%-5rem)/5)] xl:basis-[calc((100%-6.25rem)/6)]'>
+              <TeamCard member={member} />
+            </div>
+          ))
+        }
+      </Carousel>
+    </div>
+  </div>
+</section>

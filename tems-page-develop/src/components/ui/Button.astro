@@ -1,0 +1,44 @@
+---
+import { cn } from '@lib/utils'
+import type { HTMLAttributes } from 'astro/types'
+
+interface Props extends HTMLAttributes<'button'> {
+	variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'icon'
+	size?: 'sm' | 'lg'
+
+	asLink?: boolean
+	href?: string
+}
+
+const { variant = 'primary', size = 'lg', class: className, asLink = false, href , ...rest } = Astro.props
+
+const variants = {
+	primary: 'bg-primary text-white hover:bg-primary-dark',
+	secondary: 'bg-secondary text-white hover:bg-secondary-dark',
+	outline: 'bg-transparent text-primary border-2 border-primary hover:bg-primary hover:text-white',
+	ghost: 'bg-transparent border-2 border-transparent text-primary hover:border-primary',
+	icon: 'bg-secondary-dark hover:bg-secondary rounded-full text-xl p-2 text-white',
+}
+
+const sizes = {
+	sm: 'py-1 px-2 text-xs',
+	lg: 'py-2 px-4 text-sm',
+}
+
+const styles = cn(
+	'rounded-4xl font-semibold flex items-center transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed gap-2',
+	sizes[size],
+	variants[variant],
+	className ?? '',
+)
+
+const Component = asLink ? 'a' : 'button'
+---
+
+<Component
+	{...rest}
+	{href}
+	class={styles}
+>
+	<slot> Default text </slot>
+</Component>
