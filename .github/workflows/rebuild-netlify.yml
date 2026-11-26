@@ -1,0 +1,39 @@
+# Dispara un nuevo build del sitio en Netlify.
+#
+# - schedule: reconstruye a diario para que los eventos pasados
+#   desaparezcan de "Próximos eventos" aunque nadie edite el CMS.
+# - workflow_dispatch: botón "Run workflow" en la pestaña Actions.
+# - repository_dispatch: permite dispararlo vía API de GitHub (opcional).
+#
+# Requiere el secret NETLIFY_BUILD_HOOK (Settings → Secrets → Actions).
+# Ver docs/deploy-netlify.md.
+
+name: Rebuild Netlify
+
+on:
+  schedule:
+    - cron: "0 10 * * *" # 5:00 a. m. hora Colombia
+  workflow_dispatch:
+  repository_dispatch:
+    types: [cms-update]
+
+concurrency:
+  group: rebuild-netlify
+  cancel-in-progress: true
+
+jobs:
+  trigger-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al build hook de Netlify
+        env:
+          NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
+          TRIGGER: ${{ github.event_name }}
+        run: |
+          if [ -z "$NETLIFY_BUILD_HOOK" ]; then
+            echo "::error::Falta el secret NETLIFY_BUILD_HOOK"
+            exit 1
+          fi
+          curl --fail --silent --show-error -X POST -d '{}' \
+            "${NETLIFY_BUILD_HOOK}?trigger_title=GitHub%20Actions%20(${TRIGGER})"
+          echo "Build solicitado a Netlify ✅"

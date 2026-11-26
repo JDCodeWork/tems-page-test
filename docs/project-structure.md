@@ -15,6 +15,19 @@ src/
 public/              # Archivos estáticos (no se procesan)
 ```
 
+## Páginas
+
+| Ruta | Archivo |
+|---|---|
+| `/` | `src/pages/index.astro` (Hero, Nosotros, Proyectos, Eventos, Equipo) |
+| `/proyectos` | `src/pages/proyectos/index.astro` |
+| `/proyectos/<slug>` | `src/pages/proyectos/[slug].astro` (una página por proyecto de Strapi) |
+| `/eventos` | `src/pages/eventos.astro` |
+| `/unete` | `src/pages/unete.astro` |
+| 404, `robots.txt` | `src/pages/404.astro`, `src/pages/robots.txt.ts` |
+
+El header (`components/layout/SiteHeader.astro`) y el footer (`SiteFooter.astro`) son compartidos. Los enlaces del menú están en `src/lib/navigation.ts`.
+
 ## Convenciones
 
 | Tipo | Convención | Ejemplo |
@@ -37,7 +50,7 @@ public/              # Archivos estáticos (no se procesan)
 1. **Fetcher** (`src/lib/events.ts`): obtiene datos de Strapi
 2. **Tipo** (`src/types/index.ts`): define estructura `Event`
 3. **Componente** (`src/components/EventCard.astro`): consume props
-4. **Página** (`src/pages/events.astro`): usa fetcher y componente
+4. **Página** (`src/pages/eventos.astro`): usa fetcher y componente
 
 Ver [Integración Strapi](strapi-consumption.md) para detalles.
 

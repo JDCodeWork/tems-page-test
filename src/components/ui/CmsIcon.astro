@@ -22,4 +22,4 @@ const candidate = LucideIcons[iconName as keyof typeof LucideIcons]
 const Icon = typeof candidate === 'function' ? (candidate as AstroComponent) : LucideIcons.CircleHelp
 ---
 
-<Icon class={className} size={size} aria-label={`Icono ${name}`} />
+<Icon class={className} size={size} aria-hidden="true" />

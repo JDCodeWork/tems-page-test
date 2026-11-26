@@ -1,6 +1,7 @@
 ---
 import { Clock, MapPin, UserRound } from '@lucide/astro'
-import { cn } from '@/lib/utils'
+import RemoteImage from '@/components/ui/RemoteImage.astro'
+import { cn, externalProps } from '@/lib/utils'
 import type { EventCategory, TemsEvent } from '@/types'
 
 interface Props {
@@ -33,7 +34,7 @@ const category = categories[event.category]
 
 <article
   class={cn(
-    'flex h-full gap-4 rounded-2xl bg-white p-5 shadow-[0_4px_24px_-8px_rgb(0_11_25/0.15)] md:p-6',
+    'flex h-full gap-4 rounded-2xl bg-white p-5 shadow-[0_1px_8px_-4px_rgb(0_11_25/0.08)] transition duration-300 ease-out hover:-translate-y-0.5 hover:shadow-[0_6px_18px_-8px_rgb(0_11_25/0.12)] md:p-6',
     className,
   )}
 >
@@ -53,9 +54,15 @@ const category = categories[event.category]
         >
           {category.label}
         </span>
-        <h4 class='mt-2 font-title text-base font-bold leading-snug'>
-          {event.url ? <a href={event.url} class='hover:text-primary'>{event.title}</a> : event.title}
-        </h4>
+        <h3 class='mt-2 font-title text-base font-bold leading-snug'>
+          {event.url ? (
+            <a href={event.url} {...externalProps(event.url)} class='hover:text-primary'>
+              {event.title}
+            </a>
+          ) : (
+            event.title
+          )}
+        </h3>
       </div>
       {
         event.speaker && (
@@ -64,11 +71,10 @@ const category = categories[event.category]
             title={event.speaker.name}
           >
             {event.speaker.photo ? (
-              <img
-                src={event.speaker.photo}
-                alt={event.speaker.name}
+              <RemoteImage
+                media={event.speaker.photo}
+                width={64}
                 class='size-full object-cover'
-                loading='lazy'
               />
             ) : (
               <UserRound size={30} aria-hidden='true' />

@@ -1,0 +1,84 @@
+---
+import { ArrowRight } from '@lucide/astro'
+import CmsIcon from '@/components/ui/CmsIcon.astro'
+import CardDecoration from './CardDecoration.astro'
+import { projectStatuses, projectTheme } from '@/lib/project-theme'
+import { cn } from '@/lib/utils'
+import type { Project } from '@/types'
+
+interface Props {
+  project: Project
+  /** Nivel del título según la página donde está la tarjeta. */
+  headingLevel?: 'h2' | 'h3'
+  /** Posición en la lista: elige la figura decorativa para que no se repita entre vecinas. */
+  index?: number
+}
+
+const { project, headingLevel: Heading = 'h3', index = project.id } = Astro.props
+const { name, summary, features, color, status, slug } = project
+const theme = projectTheme(color)
+const statusInfo = projectStatuses[status]
+---
+
+<article
+  class='group relative isolate flex h-full flex-col overflow-hidden rounded-3xl bg-white p-6 shadow-[0_2px_14px_-6px_rgb(0_11_25/0.07)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_10px_28px_-10px_rgb(0_11_25/0.14)] sm:p-8 lg:p-6 xl:p-8'
+>
+  <CardDecoration
+    variant={index}
+    class={cn('origin-top-right transition-transform duration-700 ease-out group-hover:scale-110', theme.text)}
+  />
+  <header class='relative flex items-center gap-3'>
+    <div
+      class={cn('grid size-12 shrink-0 place-items-center rounded-full text-white sm:size-14', theme.accent)}
+    >
+      <CmsIcon
+        name={features[0]?.icon ?? 'folder-kanban'}
+        size={30}
+      />
+    </div>
+    <div class='min-w-0'>
+      <Heading class={cn('font-title text-2xl font-bold leading-none sm:text-3xl', theme.text)}>
+        {name}
+      </Heading>
+      {
+        status !== 'activo' && (
+          <span class={cn('mt-2 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide', statusInfo.class)}>
+            {statusInfo.label}
+          </span>
+        )
+      }
+    </div>
+  </header>
+  <p class={cn('relative mt-4 text-sm text-foreground', features.length === 0 && 'mb-7')}>{summary}</p>
+  {
+    features.length > 0 && (
+      <ul class='relative mt-5 mb-7 space-y-3'>
+        {features.map((feature) => (
+          <li class='flex items-start gap-3 text-sm font-medium text-foreground'>
+            <CmsIcon
+              name={feature.icon}
+              size={18}
+              class={cn('mt-px shrink-0', theme.text)}
+            />
+            <span>{feature.text}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  <a
+    href={`/proyectos/${slug}`}
+    class={cn(
+      'group/link relative mt-auto flex w-full items-center justify-center gap-3 rounded-full px-5 py-3 text-sm font-bold text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+      theme.button,
+    )}
+  >
+    Conoce {name}
+    <ArrowRight
+      size={20}
+      class='transition-transform duration-200 group-hover/link:translate-x-1'
+      aria-hidden='true'
+    />
+  </a>
+</article>

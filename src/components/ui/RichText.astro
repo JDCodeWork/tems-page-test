@@ -1,0 +1,129 @@
+---
+/**
+ * Renderiza el campo "Rich text (Blocks)" de Strapi v5.
+ */
+import { mediaUrl } from '@/lib/strapi'
+import { cn } from '@/lib/utils'
+import type { Block, InlineNode } from '@/types'
+import RemoteImage from './RemoteImage.astro'
+
+interface Props {
+  blocks: Block[]
+  class?: string
+  /** Uso interno (recursivo): nodos de texto de un bloque. */
+  inline?: InlineNode[]
+}
+
+const { blocks, class: className, inline } = Astro.props
+
+const headingTag = (level: number) => `h${Math.min(Math.max(level + 1, 2), 6)}` as 'h2'
+
+const headingStyles: Record<string, string> = {
+  h2: 'mt-10 text-2xl font-bold',
+  h3: 'mt-8 text-xl font-bold',
+  h4: 'mt-6 text-lg font-bold',
+  h5: 'mt-6 font-bold',
+  h6: 'mt-6 font-bold',
+}
+
+function textClass(node: Extract<InlineNode, { type: 'text' }>) {
+  return cn(
+    node.bold && 'font-bold',
+    node.italic && 'italic',
+    node.underline && 'underline',
+    node.strikethrough && 'line-through',
+    node.code && 'rounded bg-foreground/5 px-1 font-mono text-[0.9em]',
+  )
+}
+---
+
+{/* Inline: texto con formato y enlaces. */}
+{
+  inline ? (
+    inline.map((node) =>
+      node.type === 'link' ? (
+        <a
+          href={node.url}
+          class='font-medium text-primary underline underline-offset-2 hover:text-primary-dark'
+          {...(/^https?:\/\//.test(node.url) ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+        >
+          <Astro.self blocks={[]} inline={node.children} />
+        </a>
+      ) : textClass(node) ? (
+        <span class={textClass(node)}>{node.text}</span>
+      ) : (
+        node.text
+      ),
+    )
+  ) : (
+    <div class={cn('space-y-4 text-base leading-relaxed text-foreground/85', className)}>
+      {blocks.map((block) => {
+        switch (block.type) {
+          case 'paragraph':
+            return (
+              <p>
+                <Astro.self blocks={[]} inline={block.children} />
+              </p>
+            )
+          case 'heading': {
+            const Tag = headingTag(block.level)
+            return (
+              <Tag class={cn('font-title text-foreground', headingStyles[Tag])}>
+                <Astro.self blocks={[]} inline={block.children} />
+              </Tag>
+            )
+          }
+          case 'list': {
+            const List = block.format === 'ordered' ? 'ol' : 'ul'
+            return (
+              <List class={cn('space-y-1 pl-6', block.format === 'ordered' ? 'list-decimal' : 'list-disc')}>
+                {block.children.map((item) =>
+                  item.type === 'list-item' ? (
+                    <li class='marker:text-primary'>
+                      <Astro.self blocks={[]} inline={item.children} />
+                    </li>
+                  ) : (
+                    <li class='list-none'>
+                      <Astro.self blocks={[item]} class='space-y-1' />
+                    </li>
+                  ),
+                )}
+              </List>
+            )
+          }
+          case 'quote':
+            return (
+              <blockquote class='border-l-4 border-primary pl-4 italic'>
+                <Astro.self blocks={[]} inline={block.children} />
+              </blockquote>
+            )
+          case 'code':
+            return (
+              <pre class='overflow-x-auto rounded-xl bg-foreground p-4 text-sm text-white'>
+                <code>{block.children.map((node) => node.text).join('')}</code>
+              </pre>
+            )
+          case 'image': {
+            const src = mediaUrl(block.image)
+            return src ? (
+              <figure>
+                <RemoteImage
+                  media={{
+                    src,
+                    width: block.image.width ?? 1200,
+                    height: block.image.height ?? 800,
+                    alt: block.image.alternativeText ?? '',
+                  }}
+                  width={760}
+                  class='h-auto w-full rounded-2xl'
+                />
+              </figure>
+            ) : null
+          }
+          default:
+            return null
+        }
+      })}
+    </div>
+  )
+}

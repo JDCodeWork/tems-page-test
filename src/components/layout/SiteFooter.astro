@@ -1,0 +1,138 @@
+---
+import { ArrowRight } from '@lucide/astro'
+import IeeTemsLogo from '@assets/iee-tems-logo.svg'
+import Button from '@/components/ui/Button.astro'
+import SocialIcon from '@/components/ui/SocialIcon.astro'
+import { navLinks } from '@/lib/navigation'
+import { externalProps } from '@/lib/utils'
+import type { SiteSettings } from '@/types'
+
+interface Props {
+  settings: SiteSettings
+  hideJoinCta?: boolean
+}
+
+const { settings, hideJoinCta = false } = Astro.props
+
+const networkNames = {
+  instagram: 'Instagram',
+  linkedin: 'LinkedIn',
+  youtube: 'YouTube',
+  whatsapp: 'WhatsApp',
+  email: 'Correo',
+}
+
+const year = new Date().getFullYear()
+const blobPath =
+  'M44.7-62.8C57.4-52.6 66.4-38.4 71.3-22.6 76.2-6.8 77-10.6 72.6 24.3 68.2 41.5 58.6 58.4 44.1 67.7 29.6 77 10.2 78.7-8.6 76.2-27.4 73.7-45.6 67-58.7 54.6-71.8 42.2-79.8 24.1-80.7 5.9-81.6-12.3-75.4-30.6-63.7-41.6-52-52.6-34.8-56.3-19.3-64.4-3.8-72.5 10-85 23.3-82.6 36.6-80.2 32-73 44.7-62.8Z'
+---
+
+<footer
+  id='contacto'
+  class='relative isolate overflow-hidden bg-[#0b2545] text-white'
+>
+  {
+    [
+      'left-0 top-0 -translate-x-1/2 -translate-y-1/2 md:top-auto md:bottom-0 md:-translate-x-1/3 md:translate-y-1/3',
+      'right-0 top-0 translate-x-1/2 -translate-y-1/3 rotate-180 md:translate-x-1/3 md:top-auto md:bottom-0 md:translate-y-1/3 md:rotate-90',
+    ].map((position) => (
+      <svg
+        class={`absolute -z-10 size-28 text-primary md:size-44 ${position}`}
+        viewBox='0 0 200 200'
+        aria-hidden='true'
+        focusable='false'
+      >
+        <path fill='currentColor' d={blobPath} transform='translate(100 100)' />
+      </svg>
+    ))
+  }
+
+  <div class='mx-auto max-w-6xl px-8 md:px-12 lg:px-0'>
+    {
+      !hideJoinCta && (
+        <div class='flex flex-col gap-8 border-b border-white/15 py-14 md:flex-row md:items-center md:justify-between md:py-12' data-reveal>
+          <div class='max-w-md space-y-3'>
+            <h2 class='font-title text-3xl font-bold leading-tight md:text-2xl lg:text-3xl'>
+              ¿Quieres hacer parte de TEMS UNAL?
+            </h2>
+            <p class='text-base leading-relaxed text-white/85 md:text-sm lg:text-base'>
+              Sé parte de una comunidad que aprende, construye y transforma el futuro.
+            </p>
+          </div>
+          <Button asLink href='/unete' class='w-fit px-8 py-3 text-base'>
+            Únete ahora <ArrowRight size={20} aria-hidden='true' />
+          </Button>
+        </div>
+      )
+    }
+
+    <div class='grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr] md:gap-8'>
+      <div class='space-y-4'>
+        <IeeTemsLogo
+          class='-my-6 -ml-4 h-auto w-56 text-white'
+          role='img'
+          aria-label='IEEE TEMS - Universidad Nacional de Colombia'
+        />
+        <p class='max-w-xs text-sm leading-relaxed text-white/75'>
+          Capítulo estudiantil de la IEEE Technology and Engineering Management Society en la
+          Universidad Nacional de Colombia.
+        </p>
+        {
+          settings.socialLinks.length > 0 && (
+            <ul class='flex gap-3'>
+              {settings.socialLinks.map((link) => (
+                <li>
+                  <a
+                    href={link.url}
+                    {...externalProps(link.url)}
+                    class='grid size-9 place-items-center rounded-full bg-white/10 transition-colors hover:bg-primary'
+                    aria-label={networkNames[link.network] ?? link.network}
+                  >
+                    <SocialIcon name={link.network} size={16} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <nav aria-label='Pie de página'>
+        <h2 class='font-title text-sm font-bold uppercase tracking-wider text-white/60'>Navega</h2>
+        <ul class='mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-sm md:grid-cols-1'>
+          {
+            navLinks.map((link) => (
+              <li>
+                <a href={link.path ?? link.href} class='text-white/85 hover:text-primary'>
+                  {link.label}
+                </a>
+              </li>
+            ))
+          }
+          <li><a href='/unete' class='text-white/85 hover:text-primary'>Únete</a></li>
+        </ul>
+      </nav>
+
+      <div>
+        <h2 class='font-title text-sm font-bold uppercase tracking-wider text-white/60'>Contacto</h2>
+        <ul class='mt-4 space-y-2 text-sm text-white/85'>
+          {
+            settings.contactEmail && (
+              <li>
+                <a href={`mailto:${settings.contactEmail}`} class='break-all hover:text-primary'>
+                  {settings.contactEmail}
+                </a>
+              </li>
+            )
+          }
+          <li>Universidad Nacional de Colombia</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class='flex flex-col gap-2 border-t border-white/15 py-6 text-xs text-white/60 md:flex-row md:justify-between'>
+      <p>© {year} IEEE TEMS UNAL. Todos los derechos reservados.</p>
+      <p>IEEE es una marca registrada del Institute of Electrical and Electronics Engineers.</p>
+    </div>
+  </div>
+</footer>

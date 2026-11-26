@@ -1,0 +1,61 @@
+---
+import { ChevronRight } from '@lucide/astro'
+import Blob1 from '@/assets/hero/blob-1.svg'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  title: string
+  description?: string
+  breadcrumbs?: { label: string; href?: string }[]
+  /** Clase de color del título y la decoración (ej. `text-primary`). */
+  accent?: string
+}
+
+const { title, description, breadcrumbs = [], accent = 'text-primary' } = Astro.props
+const hasAside = Astro.slots.has('aside')
+---
+
+<section class='relative isolate overflow-hidden bg-background px-page pt-8 pb-12 md:pt-12 md:pb-16'>
+  <Blob1
+    class={cn('absolute -top-24 -right-40 -z-10 w-md -scale-x-100 opacity-25 md:w-xl', accent)}
+    aria-hidden='true'
+    focusable='false'
+  />
+
+  <div class={cn('mx-auto max-w-7xl', hasAside && 'grid items-center gap-10 lg:grid-cols-[1.2fr_1fr]')} data-reveal-stagger>
+    <div>
+      {
+        breadcrumbs.length > 0 && (
+          <nav aria-label='Ruta de navegación'>
+            <ol class='flex flex-wrap items-center gap-1 text-sm text-foreground/70'>
+              {breadcrumbs.map((crumb, i) => (
+                <li class='flex items-center gap-1'>
+                  {i > 0 && <ChevronRight size={14} aria-hidden='true' />}
+                  {crumb.href ? (
+                    <a href={crumb.href} class='hover:text-primary'>
+                      {crumb.label}
+                    </a>
+                  ) : (
+                    <span aria-current='page' class='font-medium text-foreground'>
+                      {crumb.label}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+
+      <slot name='eyebrow' />
+
+      <h1 class={cn('mt-4 font-title text-4xl font-bold md:text-5xl lg:text-6xl', accent)}>
+        {title}
+      </h1>
+      {description && <p class='mt-4 max-w-2xl text-base md:text-lg'>{description}</p>}
+      <slot />
+    </div>
+
+    {hasAside && <div><slot name='aside' /></div>}
+  </div>
+</section>

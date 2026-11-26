@@ -1,0 +1,85 @@
+---
+/**
+ * Figura decorativa para la esquina superior derecha de una tarjeta.
+ * Se dibuja dentro de su propio viewBox: solo la recorta la esquina
+ * redondeada de la tarjeta, nunca queda un borde recto.
+ */
+import { cn } from '@/lib/utils'
+
+const decorationCount = 5
+
+interface Props {
+  /** Qué figura usar; se toma el módulo, así que sirve cualquier número. */
+  variant: number
+  class?: string
+}
+
+const { variant, class: className } = Astro.props
+const kind = ((variant % decorationCount) + decorationCount) % decorationCount
+
+// Rejilla de puntos en forma de triángulo pegado a la esquina.
+const dots: { cx: number; cy: number; r: number }[] = []
+for (let row = 0; row < 7; row++) {
+  for (let col = 0; col < 7 - row; col++) {
+    dots.push({ cx: 146 - col * 17, cy: 14 + row * 17, r: 4.2 - (row + col) * 0.35 })
+  }
+}
+---
+
+<svg
+  class={cn('pointer-events-none absolute top-0 right-0 -z-10 size-36 sm:size-40', className)}
+  viewBox='0 0 160 160'
+  aria-hidden='true'
+  focusable='false'
+>
+  {
+    kind === 0 && (
+      // Mancha orgánica + punto de acento.
+      <g>
+        <path
+          fill='currentColor'
+          d='M160 0v96c-14 9-31 10-46 2-17-9-21-27-38-36-13-7-31-6-38-20C31 28 40 9 52 0Z'
+        />
+        <circle cx='42' cy='66' r='7' fill='currentColor' opacity='0.35' />
+      </g>
+    )
+  }
+  {
+    kind === 1 && (
+      // Anillos concéntricos desde la esquina.
+      <g fill='none' stroke='currentColor' stroke-width='11'>
+        <circle cx='160' cy='0' r='34' />
+        <circle cx='160' cy='0' r='62' opacity='0.55' />
+        <circle cx='160' cy='0' r='90' opacity='0.25' />
+      </g>
+    )
+  }
+  {
+    kind === 2 && (
+      // Rejilla de puntos que se desvanece.
+      <g fill='currentColor'>
+        {dots.map((dot) => <circle cx={dot.cx} cy={dot.cy} r={Math.max(dot.r, 1.4)} />)}
+      </g>
+    )
+  }
+  {
+    kind === 3 && (
+      // Barras redondeadas en diagonal (como las del hero).
+      <g fill='currentColor' transform='rotate(45 160 0)'>
+        <rect x='118' y='-30' width='22' height='110' rx='11' opacity='0.3' />
+        <rect x='149' y='-30' width='22' height='130' rx='11' />
+        <rect x='180' y='-30' width='22' height='110' rx='11' opacity='0.55' />
+      </g>
+    )
+  }
+  {
+    kind === 4 && (
+      // Ondas paralelas.
+      <g fill='none' stroke='currentColor' stroke-width='9' stroke-linecap='round'>
+        <path d='M58 -4c10 22 34 26 46 46s36 26 60 22' />
+        <path d='M88 -4c8 16 26 18 34 32s26 18 42 16' opacity='0.55' />
+        <path d='M118 -4c6 10 16 12 22 20s16 10 24 9' opacity='0.3' />
+      </g>
+    )
+  }
+</svg>

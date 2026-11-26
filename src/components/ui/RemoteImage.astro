@@ -1,0 +1,28 @@
+---
+import { Image } from 'astro:assets'
+import type { Media } from '@/types'
+
+interface Props {
+  media: Media
+  /** Ancho máximo (px) con el que se muestra; se genera al doble para pantallas retina. */
+  width: number
+  class?: string
+  loading?: 'lazy' | 'eager'
+}
+
+const { media, width, class: className, loading = 'lazy' } = Astro.props
+
+// La imagen se descarga de Strapi/Cloudinary y se optimiza en el build.
+const outputWidth = Math.min(media.width, width * 2)
+const outputHeight = Math.round((outputWidth * media.height) / media.width)
+---
+
+<Image
+  src={media.src}
+  width={outputWidth}
+  height={outputHeight}
+  alt={media.alt}
+  class={className}
+  loading={loading}
+  decoding='async'
+/>

@@ -10,7 +10,7 @@ const teamMembers = await fetchTeamMembers()
 
 <section
   id='equipo'
-  class='relative scroll-mt-4 overflow-hidden bg-background px-4 py-12 md:px-24 md:py-16'
+  class='relative scroll-mt-4 overflow-hidden bg-background px-page py-12 md:py-16'
 >
   <Wave1
     class='pointer-events-none absolute -right-48 top-0 hidden h-full text-amber-400/40 -scale-x-100 lg:block'
@@ -19,16 +19,13 @@ const teamMembers = await fetchTeamMembers()
   />
 
   <div class='relative'>
-    <SectionTitle
-      title='Nuestro equipo'
-      link={{
-        text: 'Conoce a todas las personas detrás de TEMS UNAL',
-        mobileText: 'Ver todos',
-        url: '#equipo',
-      }}
-    />
+    <SectionTitle title='Nuestro equipo' />
+    <p class='mt-8 max-w-2xl text-sm sm:text-base' data-reveal>
+      Las personas que coordinan TEMS UNAL. ¿Quieres trabajar con nosotros?{' '}
+      <a href='/unete' class='font-semibold text-primary hover:text-primary-dark'>Únete</a>.
+    </p>
 
-    <div class='-mx-4 mt-10 md:mx-0'>
+    <div class='-mx-page mt-8' data-reveal>
       <Carousel
         label='Nuestro equipo'
         trackClass='gap-4 px-[20%] py-2 sm:px-[10%] md:gap-5 md:px-0'

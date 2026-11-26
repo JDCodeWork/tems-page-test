@@ -76,4 +76,5 @@ curl -X POST \
 | Error `HTTP 403` | El API token no tiene acceso a esa colección. |
 | Error `HTTP 404` | El content type no existe o tiene otro nombre de API (ver [Integración Strapi](strapi-consumption.md)). |
 | Se publicó contenido en Strapi pero el sitio no cambió | Revisar *Settings → Webhooks* en Strapi y *Deploys* en Netlify. |
-| Las imágenes no cargan | Strapi debe ser accesible públicamente (las URLs de `/uploads` apuntan a `STRAPI_URL`) o usar un proveedor de media externo (Cloudinary, S3). |
+| El build falla al procesar una imagen | Las imágenes se descargan en el build: Strapi/Cloudinary debe responder durante el build y su host debe estar en `image.remotePatterns` (`astro.config.mjs`). |
+| Cambié Site Settings, About o Únete y el sitio no cambió | Esos contenidos también usan *Draft & Publish*: hay que darle **Publish**, no solo guardar. |

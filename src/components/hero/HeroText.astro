@@ -4,9 +4,9 @@ import Button from '../ui/Button.astro'
 ---
 
 <div
-  class='pl-4 max-w-3/4 md:pl-32 md:pt-16 md:max-w-2/3 lg:max-w-1/2 xl:max-w-[40%] z-10 relative'
+  class='pl-6 pr-2 max-w-[78%] sm:pl-8 md:pr-0 md:pl-32 md:pt-16 md:max-w-2/3 lg:max-w-1/2 xl:max-w-[40%] z-10 relative'
 >
-  <div class='flex flex-col gap-4 md:gap-8 lg:gap-10 xl:gap-12'>
+  <div class='hero-enter flex flex-col gap-4 md:gap-8 lg:gap-10 xl:gap-12'>
     <div class='space-y-2 xl:space-y-3'>
       <h1 class='text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black tracking-wider'>
         IEEE TEMS <span class='text-primary text-5xl md:text-6xl lg:text-7xl xl:text-8xl'>UNAL</span
@@ -21,8 +21,10 @@ import Button from '../ui/Button.astro'
       </p>
     </div>
     <div class='space-y-4 lg:space-y-0 lg:flex lg:gap-4 xl:gap-8'>
-      <Button>Conoce más <ArrowRight /></Button>
-      <Button variant='outline'>Próximos eventos <Calendar /></Button>
+      <Button asLink href='#nosotros' class='w-fit'>Conoce más <ArrowRight aria-hidden='true' /></Button>
+      <Button asLink href='#eventos' variant='outline' class='w-fit'>
+        Próximos eventos <Calendar aria-hidden='true' />
+      </Button>
     </div>
   </div>
 </div>

@@ -1,0 +1,147 @@
+---
+import { Menu, UserRound, X } from '@lucide/astro'
+import IeeTemsLogo from '@assets/iee-tems-logo.svg'
+import Button from '@/components/ui/Button.astro'
+import { activeSection, navLinks } from '@/lib/navigation'
+import { cn } from '@/lib/utils'
+
+interface Props {
+  /** `home`: sobre el hero de la portada. `page`: barra fija en páginas internas. */
+  variant?: 'home' | 'page'
+}
+
+const { variant = 'page' } = Astro.props
+const isHome = variant === 'home'
+const active = activeSection(Astro.url.pathname)
+---
+
+<header
+  id='site-header'
+  class={cn(
+    'z-30 w-full',
+    isHome
+      ? 'relative flex flex-wrap items-center md:py-8'
+      : 'sticky top-0 border-b border-foreground/5 bg-background/90 backdrop-blur',
+  )}
+  data-scrollspy={isHome ? '' : undefined}
+>
+  <div
+    class={cn(
+      'relative flex w-full items-center',
+      isHome && 'px-3 pt-2 sm:px-5 md:p-0',
+      !isHome && 'mx-auto max-w-7xl gap-4 px-4 py-2 sm:px-6 md:py-3 lg:px-12',
+    )}
+  >
+    <a
+      href='/'
+      class={cn('shrink-0', isHome && 'md:absolute md:pt-12')}
+      aria-label='IEEE TEMS UNAL, ir al inicio'
+    >
+      <img
+        src={IeeTemsLogo.src}
+        alt=''
+        class={isHome ? 'w-50 md:w-48 lg:w-72 xl:w-80' : 'w-40 md:w-44 lg:w-52'}
+      />
+    </a>
+
+    <nav
+      id='site-menu'
+      aria-label='Principal'
+      data-open='false'
+      class={cn(
+        'menu-animate absolute inset-x-0 top-full hidden bg-white shadow-lg data-[open=true]:block md:static md:ml-auto md:block md:bg-transparent md:shadow-none',
+      )}
+    >
+      <ul class='flex flex-col py-2 md:flex-row md:justify-end md:gap-4 md:py-0 lg:gap-8 xl:gap-10'>
+        {
+          navLinks.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                data-section={link.section}
+                data-active={String(link.section === active)}
+                aria-current={link.section === active && !isHome ? 'page' : undefined}
+                class='block py-4 text-center text-xl font-medium transition-colors duration-200 hover:text-primary data-[active=true]:text-primary data-[active=true]:underline data-[active=true]:decoration-[3px] data-[active=true]:underline-offset-12 md:py-2 md:text-base lg:text-lg md:data-[active=true]:decoration-[3.5px]'
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class={cn('ml-auto flex shrink-0 gap-2 md:ml-6 lg:ml-8', isHome && 'md:pr-8 lg:pr-16')}>
+      <Button
+        asLink
+        href='/unete'
+        size='sm'
+        class='gap-1 px-3 md:px-4 md:py-3 md:text-sm'
+        aria-current={active === undefined && Astro.url.pathname.startsWith('/unete') ? 'page' : undefined}
+      >
+        <UserRound class='size-4' aria-hidden='true' />
+        Únete
+      </Button>
+      <Button
+        variant='icon'
+        type='button'
+        class='group bg-transparent text-foreground hover:bg-primary hover:text-background md:hidden'
+        id='site-menu-button'
+        aria-controls='site-menu'
+        aria-expanded='false'
+        aria-label='Abrir menú'
+      >
+        <Menu class='group-aria-expanded:hidden' aria-hidden='true' />
+        <X class='hidden group-aria-expanded:block' aria-hidden='true' />
+      </Button>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('site-header')
+  const menu = document.getElementById('site-menu')
+  const button = document.getElementById('site-menu-button')
+
+  if (header && menu && button) {
+    const setOpen = (open: boolean) => {
+      menu.dataset.open = String(open)
+      button.setAttribute('aria-expanded', String(open))
+      button.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú')
+    }
+
+    button.addEventListener('click', () => setOpen(menu.dataset.open !== 'true'))
+    menu.addEventListener('click', (event) => {
+      if ((event.target as HTMLElement).closest('a')) setOpen(false)
+    })
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && menu.dataset.open === 'true') {
+        setOpen(false)
+        button.focus()
+      }
+    })
+
+    // Scroll-spy: en la portada se marca la sección que se está viendo.
+    if (header.hasAttribute('data-scrollspy')) {
+      const links = Array.from(menu.querySelectorAll<HTMLAnchorElement>('a[data-section]'))
+      const sections = links
+        .map((link) => document.getElementById(link.dataset.section ?? ''))
+        .filter((section): section is HTMLElement => section !== null)
+
+      const setActive = (id: string) => {
+        for (const link of links) link.dataset.active = String(link.dataset.section === id)
+      }
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) setActive(entry.target.id)
+          }
+        },
+        // Una sección cuenta como "actual" cuando cruza la franja entre el 30% y el 40% de la pantalla.
+        { rootMargin: '-30% 0px -60% 0px' },
+      )
+      for (const section of sections) observer.observe(section)
+    }
+  }
+</script>

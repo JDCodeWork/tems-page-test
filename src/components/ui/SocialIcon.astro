@@ -1,7 +1,7 @@
 ---
-import { Mail } from '@lucide/astro'
+import { Mail, MessageCircle } from '@lucide/astro'
 
-type Network = 'instagram' | 'linkedin' | 'youtube' | 'mail'
+type Network = 'instagram' | 'linkedin' | 'youtube' | 'whatsapp' | 'mail' | 'email'
 
 interface Props {
   name: Network | string
@@ -13,8 +13,14 @@ const { name, size = 16, class: className } = Astro.props
 ---
 
 {
-  name === 'mail' ? (
+  name === 'mail' || name === 'email' ? (
     <Mail
+      size={size}
+      class={className}
+      aria-hidden='true'
+    />
+  ) : name === 'whatsapp' ? (
+    <MessageCircle
       size={size}
       class={className}
       aria-hidden='true'
