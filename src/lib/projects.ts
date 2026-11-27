@@ -3,6 +3,7 @@ import type {
 	Feature,
 	Project,
 	ProjectColor,
+	ProjectDecoration,
 	ProjectMember,
 	ProjectStatus,
 } from "@/types";
@@ -19,6 +20,8 @@ type StrapiProject = {
 	cover?: StrapiMedia;
 	color?: ProjectColor | null;
 	projectStatus?: ProjectStatus | null;
+	icon?: string | null;
+	decoration?: ProjectDecoration | null;
 	features?: Feature[];
 	members?: { role?: string | null; person?: StrapiTeamMember | null }[];
 	links?: { label: string; url: string }[];
@@ -53,6 +56,9 @@ export async function fetchProjects(): Promise<Project[]> {
 		cover: toMedia(project.cover, project.name),
 		color: project.color ?? "orange",
 		status: project.projectStatus ?? "activo",
+		icon:
+			project.icon?.trim() || project.features?.[0]?.icon || "folder-kanban",
+		decoration: project.decoration ?? undefined,
 		features: project.features ?? [],
 		// Una relación a una persona sin publicar llega como `null`.
 		members: (project.members ?? []).flatMap(

@@ -3,19 +3,28 @@
  * Figura decorativa para la esquina superior derecha de una tarjeta.
  * Se dibuja dentro de su propio viewBox: solo la recorta la esquina
  * redondeada de la tarjeta, nunca queda un borde recto.
+ *
+ * La figura de cada proyecto se elige en Strapi (campo `decoration`).
+ * Para añadir una nueva: agregarla aquí, en `ProjectDecoration`
+ * (src/types) y en la enumeración del content type Project de Strapi.
  */
 import { cn } from '@/lib/utils'
+import type { ProjectDecoration } from '@/types'
 
-const decorationCount = 5
+const decorations: ProjectDecoration[] = ['mancha', 'anillos', 'puntos', 'barras', 'ondas', 'hexagonos', 'cruces']
 
 interface Props {
-  /** Qué figura usar; se toma el módulo, así que sirve cualquier número. */
-  variant: number
+  /** Figura elegida en Strapi. Si no hay, se usa `fallbackIndex`. */
+  variant?: ProjectDecoration
+  /** Posición en la lista: alterna figuras para que no se repitan entre vecinas. */
+  fallbackIndex?: number
   class?: string
 }
 
-const { variant, class: className } = Astro.props
-const kind = ((variant % decorationCount) + decorationCount) % decorationCount
+const { variant, fallbackIndex = 0, class: className } = Astro.props
+const count = decorations.length
+const kind: ProjectDecoration =
+  variant && decorations.includes(variant) ? variant : decorations[((fallbackIndex % count) + count) % count]
 
 // Rejilla de puntos en forma de triángulo pegado a la esquina.
 const dots: { cx: number; cy: number; r: number }[] = []
@@ -23,6 +32,22 @@ for (let row = 0; row < 7; row++) {
   for (let col = 0; col < 7 - row; col++) {
     dots.push({ cx: 146 - col * 17, cy: 14 + row * 17, r: 4.2 - (row + col) * 0.35 })
   }
+}
+
+// Cruces en rejilla diagonal que se desvanecen.
+const crosses: { x: number; y: number; opacity: number }[] = []
+for (let row = 0; row < 4; row++) {
+  for (let col = 0; col < 4 - row; col++) {
+    crosses.push({ x: 140 - col * 30, y: 20 + row * 30, opacity: 1 - (row + col) * 0.22 })
+  }
+}
+
+/** Hexágono regular (con un vértice arriba) centrado en (cx, cy). */
+function hexagon(cx: number, cy: number, r: number) {
+  return Array.from({ length: 6 }, (_, i) => {
+    const angle = (Math.PI / 3) * i - Math.PI / 2
+    return `${(cx + r * Math.cos(angle)).toFixed(1)},${(cy + r * Math.sin(angle)).toFixed(1)}`
+  }).join(' ')
 }
 ---
 
@@ -33,7 +58,7 @@ for (let row = 0; row < 7; row++) {
   focusable='false'
 >
   {
-    kind === 0 && (
+    kind === 'mancha' && (
       // Mancha orgánica + punto de acento.
       <g>
         <path
@@ -45,7 +70,7 @@ for (let row = 0; row < 7; row++) {
     )
   }
   {
-    kind === 1 && (
+    kind === 'anillos' && (
       // Anillos concéntricos desde la esquina.
       <g fill='none' stroke='currentColor' stroke-width='11'>
         <circle cx='160' cy='0' r='34' />
@@ -55,7 +80,7 @@ for (let row = 0; row < 7; row++) {
     )
   }
   {
-    kind === 2 && (
+    kind === 'puntos' && (
       // Rejilla de puntos que se desvanece.
       <g fill='currentColor'>
         {dots.map((dot) => <circle cx={dot.cx} cy={dot.cy} r={Math.max(dot.r, 1.4)} />)}
@@ -63,7 +88,7 @@ for (let row = 0; row < 7; row++) {
     )
   }
   {
-    kind === 3 && (
+    kind === 'barras' && (
       // Barras redondeadas en diagonal (como las del hero).
       <g fill='currentColor' transform='rotate(45 160 0)'>
         <rect x='118' y='-30' width='22' height='110' rx='11' opacity='0.3' />
@@ -73,12 +98,33 @@ for (let row = 0; row < 7; row++) {
     )
   }
   {
-    kind === 4 && (
+    kind === 'ondas' && (
       // Ondas paralelas.
       <g fill='none' stroke='currentColor' stroke-width='9' stroke-linecap='round'>
         <path d='M58 -4c10 22 34 26 46 46s36 26 60 22' />
         <path d='M88 -4c8 16 26 18 34 32s26 18 42 16' opacity='0.55' />
         <path d='M118 -4c6 10 16 12 22 20s16 10 24 9' opacity='0.3' />
+      </g>
+    )
+  }
+  {
+    kind === 'hexagonos' && (
+      // Panal de hexágonos que se aleja de la esquina.
+      <g fill='none' stroke='currentColor' stroke-width='8' stroke-linejoin='round'>
+        <polygon points={hexagon(136, 22, 28)} />
+        <polygon points={hexagon(84, 22, 22)} opacity='0.55' />
+        <polygon points={hexagon(124, 80, 22)} opacity='0.55' />
+        <polygon points={hexagon(76, 74, 14)} opacity='0.3' />
+      </g>
+    )
+  }
+  {
+    kind === 'cruces' && (
+      // Cruces redondeadas en diagonal que se desvanecen.
+      <g stroke='currentColor' stroke-width='6' stroke-linecap='round'>
+        {crosses.map(({ x, y, opacity }) => (
+          <path d={`M${x - 8} ${y}h16M${x} ${y - 8}v16`} opacity={Math.max(opacity, 0.25)} />
+        ))}
       </g>
     )
   }

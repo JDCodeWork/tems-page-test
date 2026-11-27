@@ -10,12 +10,12 @@ interface Props {
   project: Project
   /** Nivel del título según la página donde está la tarjeta. */
   headingLevel?: 'h2' | 'h3'
-  /** Posición en la lista: elige la figura decorativa para que no se repita entre vecinas. */
+  /** Posición en la lista: si el proyecto no tiene figura en Strapi, se alterna para que no se repita entre vecinas. */
   index?: number
 }
 
 const { project, headingLevel: Heading = 'h3', index = project.id } = Astro.props
-const { name, summary, features, color, status, slug } = project
+const { name, summary, features, color, status, slug, icon, decoration } = project
 const theme = projectTheme(color)
 const statusInfo = projectStatuses[status]
 ---
@@ -24,17 +24,15 @@ const statusInfo = projectStatuses[status]
   class='group relative isolate flex h-full flex-col overflow-hidden rounded-3xl bg-white p-6 shadow-[0_2px_14px_-6px_rgb(0_11_25/0.07)] transition duration-300 ease-out hover:-translate-y-1 hover:shadow-[0_10px_28px_-10px_rgb(0_11_25/0.14)] sm:p-8 lg:p-6 xl:p-8'
 >
   <CardDecoration
-    variant={index}
+    variant={decoration}
+    fallbackIndex={index}
     class={cn('origin-top-right transition-transform duration-700 ease-out group-hover:scale-110', theme.text)}
   />
   <header class='relative flex items-center gap-3'>
     <div
       class={cn('grid size-12 shrink-0 place-items-center rounded-full text-white sm:size-14', theme.accent)}
     >
-      <CmsIcon
-        name={features[0]?.icon ?? 'folder-kanban'}
-        size={30}
-      />
+      <CmsIcon name={icon} size={30} />
     </div>
     <div class='min-w-0'>
       <Heading class={cn('font-title text-2xl font-bold leading-none sm:text-3xl', theme.text)}>

@@ -8,6 +8,7 @@ import CmsIcon from '@/components/ui/CmsIcon.astro'
 import RemoteImage from '@/components/ui/RemoteImage.astro'
 import RichText from '@/components/ui/RichText.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
+import CardDecoration from '@/components/projects/CardDecoration.astro'
 import TeamCard from '@/components/team/TeamCard.astro'
 import { fetchProjects } from '@/lib/projects'
 import { projectStatuses, projectTheme } from '@/lib/project-theme'
@@ -91,8 +92,15 @@ const ogImage = project.cover
             class='aspect-4/3 w-full rounded-3xl object-cover shadow-[0_8px_32px_-8px_rgb(0_11_25/0.25)]'
           />
         ) : (
-          <div class={cn('mx-auto grid aspect-square w-48 place-items-center rounded-full text-white md:w-64', theme.accent)}>
-            <CmsIcon name={project.features[0]?.icon ?? 'folder-kanban'} size={96} />
+          <div class='relative isolate mx-auto w-fit p-6 md:p-8'>
+            <CardDecoration
+              variant={project.decoration}
+              fallbackIndex={project.id}
+              class={cn('size-40 opacity-60 sm:size-40 md:size-48', theme.text)}
+            />
+            <div class={cn('grid aspect-square w-48 place-items-center rounded-full text-white md:w-64', theme.accent)}>
+              <CmsIcon name={project.icon} size={96} />
+            </div>
           </div>
         )
       }

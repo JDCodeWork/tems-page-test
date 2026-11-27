@@ -99,6 +99,8 @@ export const exampleProjects: Project[] = [
 		),
 		color: "orange",
 		status: "activo",
+		icon: "graduation-cap",
+		decoration: "mancha",
 		featured: true,
 		features: [
 			{ text: "Charlas con expertos", icon: "graduation-cap" },
@@ -124,6 +126,8 @@ export const exampleProjects: Project[] = [
 		),
 		color: "blue",
 		status: "activo",
+		icon: "monitor-cloud",
+		decoration: "anillos",
 		featured: true,
 		features: [
 			{ text: "Proyectos de desarrollo", icon: "monitor-cloud" },

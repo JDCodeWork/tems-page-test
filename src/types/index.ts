@@ -86,6 +86,16 @@ export type ProjectStatus = "activo" | "en-pausa" | "finalizado";
 
 export type Feature = { text: string; icon: string };
 
+/** Figuras SVG decorativas de las tarjetas (ver `CardDecoration.astro`). */
+export type ProjectDecoration =
+	| "mancha"
+	| "anillos"
+	| "puntos"
+	| "barras"
+	| "ondas"
+	| "hexagonos"
+	| "cruces";
+
 export type ProjectMember = TeamMember & {
 	/** Rol de la persona dentro del proyecto (si no hay, se usa su rol general). */
 	projectRole?: string;
@@ -101,6 +111,10 @@ export type Project = {
 	cover?: Media;
 	color: ProjectColor;
 	status: ProjectStatus;
+	/** Icono de Lucide que identifica al proyecto (si falta, el de la primera característica). */
+	icon: string;
+	/** Figura decorativa elegida en Strapi; si falta, se alterna según la posición. */
+	decoration?: ProjectDecoration;
 	features: Feature[];
 	members: ProjectMember[];
 	links: { label: string; url: string }[];
