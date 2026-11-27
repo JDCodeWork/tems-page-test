@@ -76,8 +76,10 @@ Crear en **Content-Type Builder** (Strapi v5). Activar *Draft & Publish* para qu
 | `description` | Rich text (Blocks) | descripción completa en la página del proyecto |
 | `cover` | Media (single, imagen) | portada; también se usa al compartir en redes |
 | `color` | Enumeration | `orange`, `blue`, `violet`, `green` |
-| `status` | Enumeration | `activo`, `en-pausa`, `finalizado` |
-| `features` | Component (repeatable) `shared.feature` | características: `text` + `icon` ([Lucide](https://lucide.dev/icons), ej. `graduation-cap`). El primer icono es el de la tarjeta |
+| `projectStatus` | Enumeration | `activo`, `en-pausa`, `finalizado` |
+| `icon` | Text (short) | icono que identifica al proyecto (círculo de la tarjeta y de su página), nombre de [Lucide](https://lucide.dev/icons), ej. `rocket`. Si está vacío se usa el de la primera característica |
+| `decoration` | Enumeration | figura SVG de la esquina de la tarjeta: `mancha`, `anillos`, `puntos`, `barras`, `ondas`, `hexagonos`, `cruces`. Si está vacía, se alterna según la posición. Las figuras están en `src/components/projects/CardDecoration.astro` |
+| `features` | Component (repeatable) `shared.feature` | características: `text` + `icon` ([Lucide](https://lucide.dev/icons), ej. `graduation-cap`) |
 | `members` | Component (repeatable) `project.member` | `person` (relación a Team Member) + `role` (rol dentro del proyecto) |
 | `links` | Component (repeatable) `shared.link` | `label` + `url` (repositorio, demo, inscripciones…) |
 | `featured` | Boolean | si aparece en la portada (si ninguno está marcado, se muestran los 3 primeros) |
