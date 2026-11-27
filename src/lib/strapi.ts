@@ -1,7 +1,8 @@
 /**
  * Cliente mínimo para la API REST de Strapi v5.
  *
- * Se ejecuta solo en build (sitio estático). Comportamiento:
+ * Se ejecuta en el build (sitio estático) y en `/preview` (vista previa de
+ * borradores, que se genera en cada visita). Comportamiento:
  * - Sin `STRAPI_URL` → devuelve `null` y la página usa el contenido de
  *   ejemplo (`src/lib/content.ts`). Útil para desarrollo local.
  * - Con `STRAPI_URL` → si Strapi falla, el build falla. Así Netlify
@@ -9,9 +10,14 @@
  */
 
 import type { Media } from "@/types";
+import { previewContext } from "./preview";
 
-const STRAPI_URL = import.meta.env.STRAPI_URL?.replace(/\/+$/, "");
-const STRAPI_TOKEN = import.meta.env.STRAPI_TOKEN;
+// `process.env` se lee en tiempo de ejecución (la función de Netlify de
+// `/preview`); `import.meta.env` cubre `astro dev`.
+const STRAPI_URL = (
+	process.env.STRAPI_URL ?? import.meta.env.STRAPI_URL
+)?.replace(/\/+$/, "");
+const STRAPI_TOKEN = process.env.STRAPI_TOKEN ?? import.meta.env.STRAPI_TOKEN;
 
 const TIMEOUT_MS = 20_000;
 const RETRIES = 3;
@@ -51,7 +57,7 @@ export function toMedia(
 	};
 }
 
-/** Varias páginas piden lo mismo (ej. ajustes del sitio): se pide una sola vez. */
+/** Varias páginas del build piden lo mismo (ej. ajustes del sitio): se pide una sola vez. */
 const cache = new Map<string, Promise<unknown>>();
 
 async function request<T>(
@@ -61,6 +67,14 @@ async function request<T>(
 	const url = new URL(`${STRAPI_URL}/api/${endpoint}`);
 	for (const [key, value] of Object.entries(query)) {
 		url.searchParams.set(key, value);
+	}
+
+	// En la vista previa se piden los borradores y no se cachea nada: cada
+	// visita debe mostrar lo último que se guardó en Strapi.
+	const preview = previewContext();
+	if (preview) {
+		url.searchParams.set("status", preview.status);
+		return fetchWithRetries<T>(url, endpoint);
 	}
 
 	const key = url.toString();

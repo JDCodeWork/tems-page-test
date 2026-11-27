@@ -2,6 +2,8 @@
 
 Strapi ([tems-page-cms](https://github.com/TEMSUNAL/tems-page-cms)) es el CMS donde se edita el contenido sin tocar el código. El sitio es **estático**: el contenido se descarga de Strapi **durante el build** y queda embebido en el HTML. Por eso cada cambio en el CMS dispara un nuevo build en Netlify (ver [Despliegue en Netlify](deploy-netlify.md)).
 
+La única excepción es `/preview`, la [vista previa de borradores](preview.md) que se abre desde el admin de Strapi: se genera en cada visita.
+
 ## Contenido dinámico
 
 | Dónde se ve | Content type en Strapi | Fetcher |
@@ -49,11 +51,22 @@ Crear en **Content-Type Builder** (Strapi v5). Activar *Draft & Publish* para qu
 | `title` | Text (short) | requerido |
 | `description` | Text (long) | requerido |
 | `date` | Datetime | requerido. Solo se muestran eventos con fecha ≥ hoy |
-| `category` | Enumeration | `charla`, `taller`, `conexa` |
+| `category` | Relation (many-to-one) → `Event Category` | opcional. Define la etiqueta y el color del evento |
 | `location` | Text (short) | requerido |
 | `speakerName` | Text (short) | opcional |
 | `speakerPhoto` | Media (single, imagen) | opcional |
 | `url` | Text (short) | opcional, enlace al detalle o inscripción |
+
+### `Event Category` (collection type → API `event-categories`)
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `name` | Text (short) | requerido, único. Texto de la etiqueta (ej. `Charla`) |
+| `color` | Enumeration | `orange`, `blue`, `violet`, `green`. Color de la etiqueta y la fecha |
+
+Sin *Draft & Publish*: una categoría se puede usar en cuanto se crea. **Solo el Super Admin** puede crear, editar o borrar categorías; Editor y Author solo pueden asignarlas. Las de siempre (Charla, Taller, Conexa) se crean solas la primera vez.
+
+> Cambiar el nombre o el color de una categoría no dispara un rebuild (el webhook solo escucha publicaciones). Se verá en el siguiente build: al publicar cualquier contenido, en el rebuild diario o lanzándolo a mano desde GitHub Actions.
 
 ### `Team Member` (collection type → API `team-members`)
 
@@ -150,7 +163,9 @@ export async function fetchProjects() {
 
 4. Llamarlo desde el componente: `const projects = await fetchProjects()`.
 
-Para un single type se usa `fetchSingle` (devuelve `{}` si aún no se ha publicado). Las peticiones se cachean durante el build, así que varias páginas pueden pedir lo mismo sin costo.
+Para un single type se usa `fetchSingle` (devuelve `{}` si aún no se ha publicado). Las peticiones se cachean durante el build, así que varias páginas pueden pedir lo mismo sin costo. En la vista previa no se cachea y se piden los borradores automáticamente (ver [Vista previa](preview.md)): no hay que hacer nada especial en el fetcher.
+
+Si la colección tiene una página propia, añádela también a `src/pages/preview.astro` y a `PREVIEWABLE` en `config/admin.ts` de Strapi.
 
 ### Parámetros útiles de Strapi
 
@@ -164,5 +179,6 @@ Para un single type se usa `fetchSingle` (devuelve `{}` si aún no se ha publica
 ## Referencias
 
 - [Despliegue en Netlify](deploy-netlify.md)
+- [Vista previa desde Strapi](preview.md)
 - [Estructura del Proyecto](project-structure.md)
 - [Documentación de la API REST de Strapi](https://docs.strapi.io/cms/api/rest)

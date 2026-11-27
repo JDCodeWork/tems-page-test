@@ -20,13 +20,14 @@ GitHub Actions                     ▼
 ## 1. Crear el sitio en Netlify
 
 1. **Add new site → Import an existing project → GitHub →** `TEMSUNAL/tems-page`.
-2. Rama de producción: `main`. El comando y la carpeta se leen de `netlify.toml` (`pnpm run build` → `dist`).
+2. Rama de producción: `main`. El comando y la carpeta se leen de `netlify.toml` (`pnpm run build` → `dist`). El adaptador `@astrojs/netlify` crea además una función para `/preview` (la [vista previa](preview.md)); el resto del sitio es estático.
 3. **Site configuration → Environment variables**:
 
    | Variable | Valor |
    |---|---|
    | `STRAPI_URL` | URL pública de Strapi, sin `/api` (ej. `https://cms.temsunal.org`) |
    | `STRAPI_TOKEN` | API token *Read-only* de Strapi |
+   | `PREVIEW_SECRET` | secreto de la [vista previa](preview.md); el mismo que en Strapi |
 
    > Si `STRAPI_URL` no está definida, el sitio se construye con el contenido de ejemplo. Defínela antes del primer deploy de producción.
 

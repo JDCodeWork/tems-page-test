@@ -1,0 +1,174 @@
+---
+import type { Project } from '@/types'
+import { getImage } from 'astro:assets'
+import { ArrowUpRight } from '@lucide/astro'
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import CmsIcon from '@/components/ui/CmsIcon.astro'
+import RemoteImage from '@/components/ui/RemoteImage.astro'
+import RichText from '@/components/ui/RichText.astro'
+import NewTabHint from '@/components/ui/NewTabHint.astro'
+import ProjectCard from '@/components/projects/ProjectCard.astro'
+import CardDecoration from '@/components/projects/CardDecoration.astro'
+import TeamCard from '@/components/team/TeamCard.astro'
+import { projectStatuses, projectTheme } from '@/lib/project-theme'
+import { cn, externalProps } from '@/lib/utils'
+
+interface Props {
+  project: Project
+  /** Otros proyectos que se sugieren al final. */
+  others: Project[]
+}
+
+const { project, others } = Astro.props
+const theme = projectTheme(project.color)
+const status = projectStatuses[project.status]
+
+// Imagen para compartir en redes: se genera en el build (no apunta a Strapi).
+const ogImage = project.cover
+  ? await getImage({ src: project.cover.src, width: 1200, height: 630, fit: 'cover', format: 'jpg' })
+  : undefined
+---
+
+<Layout
+  title={project.name}
+  description={project.summary}
+  image={ogImage?.src}
+>
+  <PageHero
+    title={project.name}
+    description={project.summary}
+    accent={theme.text}
+    breadcrumbs={[
+      { label: 'Inicio', href: '/' },
+      { label: 'Proyectos', href: '/proyectos' },
+      { label: project.name },
+    ]}
+  >
+    <span
+      slot='eyebrow'
+      class={cn('mt-6 inline-block rounded px-2 py-0.5 text-xs font-bold uppercase tracking-wide', status.class)}
+    >
+      {status.label}
+    </span>
+
+    {
+      project.links.length > 0 && (
+        <ul class='mt-8 flex flex-wrap gap-3'>
+          {project.links.map((link, i) => (
+            <li>
+              <a
+                href={link.url}
+                {...externalProps(link.url)}
+                class={cn(
+                  'inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                  i === 0 ? cn('text-white', theme.button) : 'border-2 border-current bg-white/60 hover:bg-white',
+                  i > 0 && theme.text,
+                )}
+              >
+                {link.label}
+                <NewTabHint url={link.url} />
+                <ArrowUpRight size={18} aria-hidden='true' />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div slot='aside'>
+      {
+        project.cover ? (
+          <RemoteImage
+            media={project.cover}
+            width={640}
+            loading='eager'
+            class='aspect-4/3 w-full rounded-3xl object-cover shadow-[0_8px_32px_-8px_rgb(0_11_25/0.25)]'
+          />
+        ) : (
+          <div class='relative isolate mx-auto w-fit p-6 md:p-8'>
+            <CardDecoration
+              variant={project.decoration}
+              fallbackIndex={project.id}
+              class={cn('size-40 opacity-60 sm:size-40 md:size-48', theme.text)}
+            />
+            <div class={cn('grid aspect-square w-48 place-items-center rounded-full text-white md:w-64', theme.accent)}>
+              <CmsIcon name={project.icon} size={96} />
+            </div>
+          </div>
+        )
+      }
+    </div>
+  </PageHero>
+
+  <section class='bg-white/60 px-page py-12 md:py-16'>
+    <div
+      class={cn(
+        'mx-auto grid max-w-7xl gap-10',
+        project.description.length > 0 && project.features.length > 0 && 'lg:grid-cols-[1.6fr_1fr] lg:gap-16',
+      )}
+      data-reveal-stagger
+    >
+      {
+        project.description.length > 0 && (
+          <div>
+            <h2 class='font-title text-2xl font-bold md:text-3xl'>Sobre el proyecto</h2>
+            <RichText blocks={project.description} class='mt-6 max-w-3xl' />
+          </div>
+        )
+      }
+
+      {
+        project.features.length > 0 && (
+          <aside class='h-fit rounded-3xl bg-white p-6 shadow-[0_2px_14px_-6px_rgb(0_11_25/0.07)] sm:p-8 lg:sticky lg:top-24'>
+            <h2 class={cn('font-title text-xl font-bold', theme.text)}>Características</h2>
+            <ul class='mt-5 space-y-4'>
+              {project.features.map((feature) => (
+                <li class='flex items-start gap-3 text-sm font-medium'>
+                  <span class={cn('grid size-9 shrink-0 place-items-center rounded-full', theme.soft, theme.text)}>
+                    <CmsIcon name={feature.icon} size={18} />
+                  </span>
+                  <span class='pt-2'>{feature.text}</span>
+                </li>
+              ))}
+            </ul>
+          </aside>
+        )
+      }
+    </div>
+  </section>
+
+  {
+    project.members.length > 0 && (
+      <section class='px-page py-12 md:py-16'>
+        <div class='mx-auto max-w-7xl'>
+          <h2 class='font-title text-2xl font-bold md:text-3xl'>Quiénes trabajan en {project.name}</h2>
+          <ul class='mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 md:gap-5 lg:grid-cols-5 xl:grid-cols-6' data-reveal-stagger>
+            {project.members.map((member) => (
+              <li>
+                <TeamCard member={member} role={member.projectRole} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <section class='bg-white/60 px-page py-12 md:py-16'>
+        <div class='mx-auto max-w-7xl'>
+          <h2 class='font-title text-2xl font-bold md:text-3xl'>Otros proyectos</h2>
+          <ul class='mt-8 grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3' data-reveal-stagger>
+            {others.map((other, i) => (
+              <li>
+                <ProjectCard project={other} index={i + 1} />
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+</Layout>

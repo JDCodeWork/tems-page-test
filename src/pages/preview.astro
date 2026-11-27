@@ -1,0 +1,53 @@
+---
+/**
+ * Vista previa desde el admin de Strapi (ver docs/preview.md).
+ *
+ * Strapi abre `/preview?uid=…&documentId=…&status=draft|published&secret=…`.
+ * El middleware ya comprobó el secreto y hace que todas las peticiones a
+ * Strapi de esta página pidan la versión indicada por `status`.
+ */
+import Layout from '@/layouts/Layout.astro'
+import HomeView from '@/views/HomeView.astro'
+import EventsView from '@/views/EventsView.astro'
+import JoinView from '@/views/JoinView.astro'
+import ProjectView from '@/views/ProjectView.astro'
+import { fetchProjects } from '@/lib/projects'
+
+export const prerender = false
+
+const uid = Astro.url.searchParams.get('uid') ?? ''
+const documentId = Astro.url.searchParams.get('documentId')
+
+/** Página del sitio donde se ve cada colección de Strapi. */
+const views: Record<string, 'home' | 'events' | 'join' | 'project'> = {
+  'api::about.about': 'home',
+  'api::site-setting.site-setting': 'home',
+  'api::team-member.team-member': 'home',
+  'api::event.event': 'events',
+  'api::event-category.event-category': 'events',
+  'api::join-page.join-page': 'join',
+  'api::project.project': 'project',
+}
+const view = views[uid] ?? 'home'
+
+const projects = view === 'project' ? await fetchProjects() : []
+const project = projects.find((item) => item.documentId === documentId)
+const others = projects.filter((item) => item !== project).slice(0, 3)
+---
+
+{view === 'home' && <HomeView />}
+{view === 'events' && <EventsView />}
+{view === 'join' && <JoinView />}
+{view === 'project' && project && <ProjectView project={project} others={others} />}
+{
+  view === 'project' && !project && (
+    <Layout title='Vista previa' noindex>
+      <section class='px-page py-24 text-center'>
+        <h1 class='font-title text-3xl font-bold'>Este proyecto aún no se puede previsualizar</h1>
+        <p class='mx-auto mt-4 max-w-md text-sm'>
+          Guarda el proyecto en Strapi (con al menos el nombre y el resumen) y vuelve a abrir la vista previa.
+        </p>
+      </section>
+    </Layout>
+  )
+}

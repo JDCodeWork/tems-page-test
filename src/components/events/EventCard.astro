@@ -3,7 +3,7 @@ import { Clock, MapPin, UserRound } from '@lucide/astro'
 import NewTabHint from '@/components/ui/NewTabHint.astro'
 import RemoteImage from '@/components/ui/RemoteImage.astro'
 import { cn, externalProps } from '@/lib/utils'
-import type { EventCategory, TemsEvent } from '@/types'
+import type { TemsEvent, ThemeColor } from '@/types'
 
 interface Props {
   event: TemsEvent
@@ -24,13 +24,15 @@ const time = date
   .toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true, timeZone })
   .toUpperCase()
 
-const categories = {
-  charla: { label: 'Charla', date: 'text-primary', badge: 'bg-primary/10 text-primary' },
-  taller: { label: 'Taller', date: 'text-secondary-dark', badge: 'bg-secondary/10 text-secondary' },
-  conexa: { label: 'Conexa', date: 'text-primary', badge: 'bg-primary/10 text-primary' },
-} satisfies Record<EventCategory, { label: string; date: string; badge: string }>
+// Color de la fecha y de la etiqueta según el color de la categoría (Strapi).
+const colors = {
+  orange: { date: 'text-primary', badge: 'bg-primary/10 text-primary' },
+  blue: { date: 'text-secondary-dark', badge: 'bg-secondary/10 text-secondary' },
+  violet: { date: 'text-violet-700', badge: 'bg-violet-700/10 text-violet-700' },
+  green: { date: 'text-emerald-700', badge: 'bg-emerald-700/10 text-emerald-700' },
+} satisfies Record<ThemeColor, { date: string; badge: string }>
 
-const category = categories[event.category]
+const color = colors[event.category?.color ?? 'orange'] ?? colors.orange
 ---
 
 <article
@@ -41,7 +43,7 @@ const category = categories[event.category]
 >
   <time
     datetime={event.date}
-    class={cn('flex shrink-0 flex-col items-center font-title font-bold leading-none', category.date)}
+    class={cn('flex shrink-0 flex-col items-center font-title font-bold leading-none', color.date)}
   >
     <span class='text-3xl md:text-4xl'>{day}</span>
     <span class='mt-1 text-lg'>{month}</span>
@@ -50,12 +52,14 @@ const category = categories[event.category]
   <div class='flex min-w-0 flex-1 flex-col'>
     <div class='flex items-start gap-3'>
       <div class='flex-1'>
-        <span
-          class={cn('inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide', category.badge)}
-        >
-          {category.label}
-        </span>
-        <h3 class='mt-2 font-title text-base font-bold leading-snug'>
+        {
+          event.category && (
+            <span class={cn('mb-2 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide', color.badge)}>
+              {event.category.name}
+            </span>
+          )
+        }
+        <h3 class='font-title text-base font-bold leading-snug'>
           {event.url ? (
             <a href={event.url} {...externalProps(event.url)} class='hover:text-primary'>
               {event.title}

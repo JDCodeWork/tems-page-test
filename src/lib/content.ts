@@ -19,7 +19,7 @@ export const exampleEvents: TemsEvent[] = [
 		description:
 			"Exploraremos cómo la inteligencia artificial está transformando la ingeniería y la gestión tecnológica.",
 		date: "2027-02-25T18:00:00-05:00",
-		category: "charla",
+		category: { name: "Charla", color: "orange" },
 		location: "Auditorio 401",
 		speaker: { name: "Carlos Ramírez" },
 	},
@@ -29,7 +29,7 @@ export const exampleEvents: TemsEvent[] = [
 		description:
 			"Aprende a controlar versiones y colaborar en proyectos como un profesional.",
 		date: "2027-03-04T14:00:00-05:00",
-		category: "taller",
+		category: { name: "Taller", color: "blue" },
 		location: "Laboratorio 2",
 		speaker: { name: "Laura Méndez" },
 	},
@@ -39,7 +39,7 @@ export const exampleEvents: TemsEvent[] = [
 		description:
 			"Conoce los proyectos que nuestros equipos han desarrollado este semestre.",
 		date: "2027-03-12T16:00:00-05:00",
-		category: "conexa",
+		category: { name: "Conexa", color: "orange" },
 		location: "Auditorio 401",
 	},
 	{
@@ -48,7 +48,7 @@ export const exampleEvents: TemsEvent[] = [
 		description:
 			"Herramientas prácticas para coordinar equipos técnicos y gestionar proyectos.",
 		date: "2027-03-19T17:00:00-05:00",
-		category: "charla",
+		category: { name: "Charla", color: "orange" },
 		location: "Auditorio 401",
 		speaker: { name: "Andrea Torres" },
 	},
@@ -58,7 +58,7 @@ export const exampleEvents: TemsEvent[] = [
 		description:
 			"Scrum y Kanban aplicados a proyectos estudiantiles, con ejercicios en equipo.",
 		date: "2026-10-15T15:00:00-05:00",
-		category: "taller",
+		category: { name: "Taller", color: "blue" },
 		location: "Laboratorio 2",
 	},
 ];

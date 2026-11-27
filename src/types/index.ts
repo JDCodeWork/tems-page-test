@@ -6,7 +6,14 @@ export type Media = {
 	alt: string;
 };
 
-export type EventCategory = "charla" | "taller" | "conexa";
+/** Colores de la paleta que se pueden elegir en Strapi (proyectos y categorías de eventos). */
+export type ThemeColor = "orange" | "blue" | "violet" | "green";
+
+/** Categoría de evento. Las crea el Super Admin en Strapi (colección Event Category). */
+export type EventCategory = {
+	name: string;
+	color: ThemeColor;
+};
 
 export type TemsEvent = {
 	id: number;
@@ -14,7 +21,8 @@ export type TemsEvent = {
 	description: string;
 	/** Fecha ISO 8601 con zona horaria (ej. 2026-05-28T18:00:00-05:00). */
 	date: string;
-	category: EventCategory;
+	/** Opcional: un evento puede no tener categoría. */
+	category?: EventCategory;
 	location: string;
 	speaker?: {
 		name: string;
@@ -80,7 +88,7 @@ export type Block =
 
 /* ---------- Proyectos ---------- */
 
-export type ProjectColor = "orange" | "blue" | "violet" | "green";
+export type ProjectColor = ThemeColor;
 
 export type ProjectStatus = "activo" | "en-pausa" | "finalizado";
 
@@ -103,6 +111,8 @@ export type ProjectMember = TeamMember & {
 
 export type Project = {
 	id: number;
+	/** Id del documento en Strapi (lo usa la vista previa). */
+	documentId?: string;
 	/** Generado a partir del nombre; no se edita en Strapi. */
 	slug: string;
 	name: string;

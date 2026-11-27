@@ -14,6 +14,7 @@ import { uniqueSlugs } from "./utils";
 
 type StrapiProject = {
 	id: number;
+	documentId: string;
 	name: string;
 	summary: string;
 	description?: Block[] | null;
@@ -49,6 +50,7 @@ export async function fetchProjects(): Promise<Project[]> {
 
 	return data.map((project, i) => ({
 		id: project.id,
+		documentId: project.documentId,
 		slug: slugs[i],
 		name: project.name,
 		summary: project.summary,

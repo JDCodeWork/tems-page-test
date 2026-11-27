@@ -1,37 +1,5 @@
 ---
-import Layout from '@/layouts/Layout.astro'
-import PageHero from '@/components/ui/PageHero.astro'
-import ProjectCard from '@/components/projects/ProjectCard.astro'
-import { fetchProjects } from '@/lib/projects'
-
-const projects = await fetchProjects()
-const description = 'Conoce los proyectos en los que trabajamos: espacios de aprendizaje, desarrollo y gestión de la tecnología.'
+import ProjectsView from '@/views/ProjectsView.astro'
 ---
 
-<Layout title='Proyectos' description={description}>
-  <PageHero
-    title='Nuestros proyectos'
-    description={description}
-    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Proyectos' }]}
-  />
-
-  <section class='px-page pb-16'>
-    <div class='mx-auto max-w-7xl'>
-      {
-        projects.length > 0 ? (
-          <ul class='grid gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3' data-reveal-stagger>
-            {projects.map((project, i) => (
-              <li>
-                <ProjectCard project={project} headingLevel='h2' index={i} />
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class='rounded-2xl bg-white p-6 text-center text-sm text-foreground/70'>
-            Muy pronto publicaremos nuestros proyectos.
-          </p>
-        )
-      }
-    </div>
-  </section>
-</Layout>
+<ProjectsView />

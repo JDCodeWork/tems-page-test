@@ -1,4 +1,4 @@
-import type { EventCategory, TemsEvent } from "@/types";
+import type { TemsEvent, ThemeColor } from "@/types";
 import { exampleEvents } from "./content";
 import { fetchCollection, type StrapiMedia, toMedia } from "./strapi";
 
@@ -7,7 +7,7 @@ type StrapiEvent = {
 	title: string;
 	description: string;
 	date: string;
-	category: EventCategory;
+	category?: { name: string; color?: ThemeColor | null } | null;
 	location: string;
 	speakerName?: string | null;
 	speakerPhoto?: StrapiMedia;
@@ -20,7 +20,9 @@ function mapEvent(event: StrapiEvent): TemsEvent {
 		title: event.title,
 		description: event.description,
 		date: event.date,
-		category: event.category,
+		category: event.category
+			? { name: event.category.name, color: event.category.color ?? "orange" }
+			: undefined,
 		location: event.location,
 		url: event.url || undefined,
 		speaker: event.speakerName
@@ -40,7 +42,8 @@ export async function fetchUpcomingEvents(): Promise<TemsEvent[]> {
 	const data = await fetchCollection<StrapiEvent>("events", {
 		"filters[date][$gte]": now(),
 		sort: "date:asc",
-		populate: "speakerPhoto",
+		"populate[speakerPhoto]": "true",
+		"populate[category]": "true",
 		"pagination[pageSize]": "24",
 	});
 
@@ -57,7 +60,8 @@ export async function fetchPastEvents(limit = 12): Promise<TemsEvent[]> {
 	const data = await fetchCollection<StrapiEvent>("events", {
 		"filters[date][$lt]": now(),
 		sort: "date:desc",
-		populate: "speakerPhoto",
+		"populate[speakerPhoto]": "true",
+		"populate[category]": "true",
 		"pagination[pageSize]": String(limit),
 	});
 

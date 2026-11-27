@@ -1,4 +1,5 @@
 // @ts-check
+import netlify from "@astrojs/netlify";
 import sitemap from "@astrojs/sitemap";
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
@@ -26,7 +27,14 @@ if (env.STRAPI_URL) {
 // https://astro.build/config
 export default defineConfig({
 	site,
-	integrations: [sitemap()],
+	// Todo el sitio se genera en el build (estático). Solo `/preview` (vista
+	// previa de borradores desde Strapi) se genera en cada visita, como función
+	// de Netlify. Ver docs/preview.md.
+	// En `astro dev` no se emulan las Edge Functions de Netlify (el sitio no las usa).
+	adapter: netlify({ devFeatures: { edgeFunctions: false } }),
+	integrations: [
+		sitemap({ filter: (page) => !new URL(page).pathname.startsWith("/preview") }),
+	],
 	image: { remotePatterns },
 	vite: {
 		server: {

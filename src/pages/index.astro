@@ -1,34 +1,5 @@
 ---
-import Layout from '@/layouts/Layout.astro'
-import Hero from '@/components/hero/Hero.astro'
-import About from '@/components/about/About.astro'
-import Projects from '@/components/projects/Projects.astro'
-import Events from '@/components/events/Events.astro'
-import Team from '@/components/team/Team.astro'
-import { fetchUpcomingEvents } from '@/lib/events'
-import { fetchProjects } from '@/lib/projects'
-import { fetchAbout } from '@/lib/site'
-import { fetchTeamMembers } from '@/lib/team'
-
-// Las peticiones a Strapi se cachean: Events y Team reutilizan estos datos.
-const [about, projects, events, team] = await Promise.all([
-  fetchAbout(),
-  fetchProjects(),
-  fetchUpcomingEvents(),
-  fetchTeamMembers(),
-])
-
-const stats = [
-  { value: projects.filter((project) => project.status === 'activo').length, label: 'Proyectos activos' },
-  { value: team.length, label: 'Personas en el equipo' },
-  { value: events.length, label: 'Próximos eventos' },
-]
+import HomeView from '@/views/HomeView.astro'
 ---
 
-<Layout home>
-  <Hero />
-  <About about={about} stats={stats} />
-  <Projects projects={projects} />
-  <Events />
-  <Team />
-</Layout>
+<HomeView />

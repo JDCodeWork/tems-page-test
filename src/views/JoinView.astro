@@ -1,0 +1,139 @@
+---
+import { Mail, MessageCircle, Phone } from '@lucide/astro'
+import Layout from '@/layouts/Layout.astro'
+import PageHero from '@/components/ui/PageHero.astro'
+import RichText from '@/components/ui/RichText.astro'
+import { fetchJoinPage, fetchSiteSettings } from '@/lib/site'
+import { cn } from '@/lib/utils'
+
+const [join, settings] = await Promise.all([fetchJoinPage(), fetchSiteSettings()])
+
+/** Un número con indicativo (+57 300…) también se ofrece como chat de WhatsApp. */
+function whatsappLink(phone: string) {
+  return phone.trim().startsWith('+') ? `https://wa.me/${phone.replace(/\D/g, '')}` : undefined
+}
+---
+
+<Layout title='Únete' description={join.intro} hideJoinCta>
+  <PageHero
+    title='Únete a TEMS UNAL'
+    description={join.intro}
+    breadcrumbs={[{ label: 'Inicio', href: '/' }, { label: 'Únete' }]}
+  >
+    <span
+      slot='eyebrow'
+      class={cn(
+        'mt-6 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-bold',
+        join.recruitmentOpen ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700',
+      )}
+    >
+      <span class={cn('size-2 rounded-full', join.recruitmentOpen ? 'bg-emerald-600' : 'bg-slate-500')}></span>
+      {join.recruitmentNote ?? (join.recruitmentOpen ? 'Convocatoria abierta' : 'Convocatoria cerrada')}
+    </span>
+
+    <div class='mt-8 flex flex-wrap gap-3'>
+      {
+        join.whatsappUrl && (
+          <a
+            href={join.whatsappUrl}
+            target='_blank'
+            rel='noopener noreferrer'
+            class='inline-flex items-center gap-2 rounded-full bg-emerald-700 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-800'
+          >
+            <MessageCircle size={20} aria-hidden='true' />
+            Entrar al grupo de WhatsApp
+            <span class='sr-only'> (se abre en una pestaña nueva)</span>
+          </a>
+        )
+      }
+      {
+        settings.contactEmail && (
+          <a
+            href={`mailto:${settings.contactEmail}`}
+            class='inline-flex items-center gap-2 rounded-full border-2 border-primary px-6 py-2.5 text-sm font-bold text-primary transition-colors hover:bg-primary hover:text-white'
+          >
+            <Mail size={20} aria-hidden='true' />
+            Escríbenos
+          </a>
+        )
+      }
+    </div>
+  </PageHero>
+
+  {
+    join.steps.length > 0 && (
+      <section class='bg-white/60 px-page py-12 md:py-16'>
+        <div class='mx-auto max-w-7xl'>
+          <h2 class='font-title text-2xl font-bold md:text-3xl'>¿Cómo empiezo?</h2>
+          <ol class='mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3' data-reveal-stagger>
+            {join.steps.map((step, i) => (
+              <li class='flex gap-4 rounded-2xl bg-white p-6 shadow-[0_1px_8px_-4px_rgb(0_11_25/0.08)]'>
+                <span class='grid size-10 shrink-0 place-items-center rounded-full bg-primary font-title text-lg font-bold text-white'>
+                  {i + 1}
+                </span>
+                <div>
+                  <h3 class='font-title text-lg font-bold'>{step.title}</h3>
+                  {step.description && <p class='mt-1 text-sm leading-relaxed text-foreground/80'>{step.description}</p>}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    (join.contacts.length > 0 || join.details.length > 0) && (
+      <section class='px-page py-12 md:py-16'>
+        <div class={cn('mx-auto grid max-w-7xl gap-10', join.details.length > 0 && join.contacts.length > 0 && 'lg:grid-cols-[1.4fr_1fr] lg:gap-16')} data-reveal-stagger>
+          {join.details.length > 0 && (
+            <div>
+              <h2 class='font-title text-2xl font-bold md:text-3xl'>Lo que debes saber</h2>
+              <RichText blocks={join.details} class='mt-6' />
+            </div>
+          )}
+
+          {join.contacts.length > 0 && (
+            <div>
+              <h2 class='font-title text-2xl font-bold md:text-3xl'>¿Con quién hablo?</h2>
+              <ul class={cn('mt-6 gap-4', join.details.length > 0 ? 'space-y-4' : 'grid md:grid-cols-2 lg:grid-cols-3')}>
+                {join.contacts.map((contact) => {
+                  const whatsapp = contact.phone ? whatsappLink(contact.phone) : undefined
+                  return (
+                    <li class='rounded-2xl bg-white p-6 shadow-[0_1px_8px_-4px_rgb(0_11_25/0.08)]'>
+                      <h3 class='font-title text-lg font-bold'>{contact.name}</h3>
+                      {contact.role && <p class='text-sm text-foreground/70'>{contact.role}</p>}
+                      <ul class='mt-3 space-y-1.5 text-sm font-medium'>
+                        {contact.email && (
+                          <li>
+                            <a href={`mailto:${contact.email}`} class='inline-flex items-center gap-2 break-all text-primary hover:text-primary-dark'>
+                              <Mail size={16} aria-hidden='true' />
+                              {contact.email}
+                            </a>
+                          </li>
+                        )}
+                        {contact.phone && (
+                          <li>
+                            <a
+                              href={whatsapp ?? `tel:${contact.phone.replace(/\s/g, '')}`}
+                              {...(whatsapp ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                              class='inline-flex items-center gap-2 text-primary hover:text-primary-dark'
+                            >
+                              {whatsapp ? <MessageCircle size={16} aria-hidden='true' /> : <Phone size={16} aria-hidden='true' />}
+                              {contact.phone}
+                            </a>
+                          </li>
+                        )}
+                      </ul>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          )}
+        </div>
+      </section>
+    )
+  }
+</Layout>
