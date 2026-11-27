@@ -31,8 +31,17 @@
 
 /* Base styles */
 @layer base {
-	html {
-		scroll-behavior: smooth;
+	/* Desplazamiento suave solo si el usuario no pidió reducir el movimiento. */
+	@media (prefers-reduced-motion: no-preference) {
+		html {
+			scroll-behavior: smooth;
+		}
+	}
+
+	/* Foco de teclado visible y consistente en todo el sitio. */
+	:focus-visible {
+		outline: 3px solid var(--color-primary);
+		outline-offset: 3px;
 	}
 
 	body {

@@ -4,7 +4,7 @@ import IeeTemsLogo from '@assets/iee-tems-logo.svg'
 import Button from '@/components/ui/Button.astro'
 import SocialIcon from '@/components/ui/SocialIcon.astro'
 import { navLinks } from '@/lib/navigation'
-import { externalProps } from '@/lib/utils'
+import { externalLabel, externalProps } from '@/lib/utils'
 import type { SiteSettings } from '@/types'
 
 interface Props {
@@ -86,7 +86,7 @@ const blobPath =
                     href={link.url}
                     {...externalProps(link.url)}
                     class='grid size-9 place-items-center rounded-full bg-white/10 transition-colors hover:bg-primary'
-                    aria-label={networkNames[link.network] ?? link.network}
+                    aria-label={externalLabel(networkNames[link.network] ?? link.network, link.url)}
                   >
                     <SocialIcon name={link.network} size={16} />
                   </a>

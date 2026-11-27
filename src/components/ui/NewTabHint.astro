@@ -1,0 +1,12 @@
+---
+/** Texto oculto que avisa a los lectores de pantalla que el enlace abre otra pestaña. */
+import { isExternal, NEW_TAB_HINT } from '@/lib/utils'
+
+interface Props {
+  url: string
+}
+
+const { url } = Astro.props
+---
+
+{isExternal(url) && <span class='sr-only'> ({NEW_TAB_HINT})</span>}

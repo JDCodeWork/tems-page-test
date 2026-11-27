@@ -129,7 +129,13 @@ const active = activeSection(Astro.url.pathname)
         .filter((section): section is HTMLElement => section !== null)
 
       const setActive = (id: string) => {
-        for (const link of links) link.dataset.active = String(link.dataset.section === id)
+        for (const link of links) {
+          const isActive = link.dataset.section === id
+          link.dataset.active = String(isActive)
+          // Indica a los lectores de pantalla qué sección se está viendo.
+          if (isActive) link.setAttribute('aria-current', 'location')
+          else link.removeAttribute('aria-current')
+        }
       }
 
       const observer = new IntersectionObserver(

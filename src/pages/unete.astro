@@ -38,10 +38,11 @@ function whatsappLink(phone: string) {
             href={join.whatsappUrl}
             target='_blank'
             rel='noopener noreferrer'
-            class='inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600 focus-visible:ring-offset-2'
+            class='inline-flex items-center gap-2 rounded-full bg-emerald-700 px-6 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-800'
           >
             <MessageCircle size={20} aria-hidden='true' />
             Entrar al grupo de WhatsApp
+            <span class='sr-only'> (se abre en una pestaña nueva)</span>
           </a>
         )
       }

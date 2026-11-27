@@ -13,7 +13,7 @@ interface Props {
 const { label, trackClass = '', dots = 'mobile' } = Astro.props
 
 const arrowClass =
-  'absolute top-1/2 z-10 hidden -translate-y-1/2 place-items-center size-10 rounded-full bg-white text-foreground shadow-md transition hover:bg-primary hover:text-white disabled:pointer-events-none disabled:opacity-0 md:grid'
+  'absolute top-1/2 z-10 hidden -translate-y-1/2 place-items-center size-10 rounded-full bg-white text-foreground shadow-md transition hover:bg-primary hover:text-white disabled:invisible md:grid'
 ---
 
 <div
@@ -29,12 +29,12 @@ const arrowClass =
     aria-label='Anterior'
     data-carousel-prev
   >
-    <ChevronLeft size={20} />
+    <ChevronLeft size={20} aria-hidden='true' />
   </button>
 
   <div
     class={cn(
-      'flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+      'flex snap-x snap-mandatory overflow-x-auto motion-safe:scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
       trackClass,
     )}
     data-carousel-track
@@ -48,7 +48,7 @@ const arrowClass =
     aria-label='Siguiente'
     data-carousel-next
   >
-    <ChevronRight size={20} />
+    <ChevronRight size={20} aria-hidden='true' />
   </button>
 
   <div
@@ -58,6 +58,8 @@ const arrowClass =
       dots === 'none' && 'hidden',
     )}
     data-carousel-dots
+    role='group'
+    aria-label='Elegir elemento'
   >
   </div>
 </div>
@@ -71,6 +73,11 @@ const arrowClass =
     if (!track || !prev || !next || !dotsContainer) return
 
     const slides = Array.from(track.children) as HTMLElement[]
+    slides.forEach((slide, i) => {
+      slide.setAttribute('role', 'group')
+      slide.setAttribute('aria-roledescription', 'elemento')
+      slide.setAttribute('aria-label', `${i + 1} de ${slides.length}`)
+    })
     const step = () => (slides[0]?.offsetWidth ?? track.clientWidth) + parseFloat(getComputedStyle(track).columnGap || '0')
 
     const dots = slides.map((_, i) => {
@@ -103,6 +110,8 @@ const arrowClass =
       })
       dots.forEach((dot, i) => {
         dot.dataset.active = String(i === active)
+        if (i === active) dot.setAttribute('aria-current', 'true')
+        else dot.removeAttribute('aria-current')
       })
     }
 

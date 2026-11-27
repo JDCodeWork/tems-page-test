@@ -1,5 +1,6 @@
 ---
 import { Clock, MapPin, UserRound } from '@lucide/astro'
+import NewTabHint from '@/components/ui/NewTabHint.astro'
 import RemoteImage from '@/components/ui/RemoteImage.astro'
 import { cn, externalProps } from '@/lib/utils'
 import type { EventCategory, TemsEvent } from '@/types'
@@ -58,6 +59,7 @@ const category = categories[event.category]
           {event.url ? (
             <a href={event.url} {...externalProps(event.url)} class='hover:text-primary'>
               {event.title}
+              <NewTabHint url={event.url} />
             </a>
           ) : (
             event.title

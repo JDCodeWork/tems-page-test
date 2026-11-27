@@ -7,6 +7,7 @@ import PageHero from '@/components/ui/PageHero.astro'
 import CmsIcon from '@/components/ui/CmsIcon.astro'
 import RemoteImage from '@/components/ui/RemoteImage.astro'
 import RichText from '@/components/ui/RichText.astro'
+import NewTabHint from '@/components/ui/NewTabHint.astro'
 import ProjectCard from '@/components/projects/ProjectCard.astro'
 import CardDecoration from '@/components/projects/CardDecoration.astro'
 import TeamCard from '@/components/team/TeamCard.astro'
@@ -74,6 +75,7 @@ const ogImage = project.cover
                 )}
               >
                 {link.label}
+                <NewTabHint url={link.url} />
                 <ArrowUpRight size={18} aria-hidden='true' />
               </a>
             </li>

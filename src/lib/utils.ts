@@ -34,9 +34,21 @@ export function paragraphs(...texts: string[]) {
 	}));
 }
 
+export function isExternal(url: string) {
+	return /^https?:\/\//.test(url);
+}
+
+/** Aviso para lectores de pantalla en enlaces que abren otra pestaña. */
+export const NEW_TAB_HINT = "se abre en una pestaña nueva";
+
 /** Enlaces externos se abren en otra pestaña. */
 export function externalProps(url: string) {
-	return /^https?:\/\//.test(url)
+	return isExternal(url)
 		? { target: "_blank", rel: "noopener noreferrer" }
 		: {};
+}
+
+/** `aria-label` con el aviso de pestaña nueva si el enlace es externo. */
+export function externalLabel(label: string, url: string) {
+	return isExternal(url) ? `${label}, ${NEW_TAB_HINT}` : label;
 }
